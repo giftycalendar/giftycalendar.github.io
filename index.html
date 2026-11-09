@@ -58,6 +58,9 @@
     .door.locked { opacity: .55; }
     .door.opened { background: transparent; box-shadow: inset 0 0 0 3px var(--accent); color: var(--fg); }
     .door .lock { position: absolute; right: 6px; bottom: 4px; font-size: 13px; }
+    .button.secondary { background: rgba(255,255,255,.16); color: var(--fg); }
+    .code { font-size: 26px; letter-spacing: 3px; color: var(--accent); }
+    .store-link { color: var(--accent); font-weight: 700; }
     .link-button { background: none; border: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; opacity: .8; }
 
     dialog {
@@ -90,7 +93,18 @@
       <p id="code-error" class="error" role="alert" hidden></p>
       <button class="primary" type="submit">Apri il regalo</button>
     </form>
-    <p class="ios muted">Hai un iPhone? Scarica l'app <strong>Gifty</strong> dall'App Store per vivere il calendario con widget e notifiche.</p>
+    <p class="ios muted">Hai un iPhone? Con l'app <strong>Gifty</strong> il calendario ha anche widget e promemoria.<br>
+      <a class="store-link" href="https://apps.apple.com/it/app/id6831085233">Scarica Gifty dall'App Store</a></p>
+  </section>
+
+  <section id="app-first" class="screen" hidden>
+    <div class="hero">🎁</div>
+    <h1>C'è un calendario dell'Avvento per te!</h1>
+    <p class="muted">Aprilo con l'app <strong>Gifty</strong>: ogni mattina una sorpresa, con promemoria e widget.</p>
+    <a class="button" href="https://apps.apple.com/it/app/id6831085233">Scarica Gifty dall'App Store</a>
+    <p class="muted">Poi tocca «Apri un regalo» e inserisci il codice<br><strong id="app-first-code" class="code"></strong></p>
+    <a id="app-first-open" class="button secondary" href="#">Ho già l'app: apri il regalo</a>
+    <button id="app-first-web" class="link-button" type="button">Preferisci guardarlo qui nel browser?</button>
   </section>
 
   <section id="loading" class="screen" hidden>
@@ -104,6 +118,10 @@
     <div id="doors"></div>
     <p id="cal-note" class="muted"></p>
     <p class="muted" style="font-size:13px">Per tenere traccia delle caselle aperte, riapri il regalo sempre da questo telefono e da questo browser.</p>
+    <div id="ios-box" hidden>
+      <a id="open-in-app" class="button" href="#">Apri con l'app Gifty</a>
+      <p class="muted" style="font-size:13px">Non hai ancora l'app? <a class="store-link" href="https://apps.apple.com/it/app/id6831085233">Scaricala dall'App Store</a>, poi torna qui e tocca «Apri con l'app».</p>
+    </div>
     <button id="change-code" class="link-button" type="button">Apri un altro regalo</button>
   </section>
 </main>

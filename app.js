@@ -22,6 +22,10 @@ const $ = (sel) => document.querySelector(sel);
 let gift = null;
 let code = '';
 
+function isApple() {
+  return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 function normalize(input) {
   return [...input.toUpperCase()].filter((c) => ALPHABET.includes(c)).join('');
 }
@@ -143,6 +147,10 @@ function renderCalendar() {
   }
 
   const first = unlockDate(1, gift.year);
+  // Su iPhone e iPad propone l'app, che apre il regalo senza scrivere il codice.
+  $('#ios-box').hidden = !isApple();
+  $('#open-in-app').href = `giftycalendar://regalo/${code}`;
+
   $('#cal-note').textContent = now < first
     ? `Le caselle si aprono una al giorno, dal 1° dicembre ${gift.year}.`
     : 'Tocca la casella di oggi per scoprire la sorpresa. Quelle dei giorni passati restano apribili.';
@@ -220,7 +228,15 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('start');
   });
   const fromURL = new URLSearchParams(location.search).get('c');
-  if (fromURL) {
+  const urlCode = fromURL ? normalize(fromURL) : '';
+  if (urlCode.length === CODE_LENGTH && isApple()) {
+    // Su iPhone il regalo si vive nell'app: il browser resta solo un'alternativa.
+    $('#code-input').value = fromURL;
+    $('#app-first-code').textContent = formatted(urlCode);
+    $('#app-first-open').href = `giftycalendar://regalo/${urlCode}`;
+    $('#app-first-web').addEventListener('click', () => openGift(urlCode));
+    showScreen('app-first');
+  } else if (fromURL) {
     $('#code-input').value = fromURL;
     openGift(fromURL);
   } else {
