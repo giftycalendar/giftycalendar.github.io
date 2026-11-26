@@ -85,7 +85,36 @@ async function fetchGift(c) {
   if (!asset || !asset.downloadURL) throw new Error('Questo regalo è vuoto o non è più disponibile.');
   const fileRes = await fetch(asset.downloadURL.replace('${f}', 'regalo.avvento'));
   if (!fileRes.ok) throw new Error('Non riesco a scaricare il regalo. Riprova tra poco.');
-  return parseBplist(await fileRes.arrayBuffer());
+  let buffer;
+  try {
+    buffer = await readWithProgress(fileRes, asset.size);
+  } catch {
+    // Se la lettura a pezzi non funziona su questo browser, si scarica tutto in una volta.
+    const retry = await fetch(asset.downloadURL.replace('${f}', 'regalo.avvento'));
+    if (!retry.ok) throw new Error('Non riesco a scaricare il regalo. Riprova tra poco.');
+    buffer = await retry.arrayBuffer();
+  }
+  return parseBplist(buffer);
+}
+
+// Scarica il regalo mostrando quanto manca: con molti video può pesare parecchio.
+async function readWithProgress(res, expectedSize) {
+  const total = Number(res.headers.get('Content-Length')) || expectedSize || 0;
+  if (!res.body || !total) return res.arrayBuffer();
+  const reader = res.body.getReader();
+  const out = new Uint8Array(total);
+  let received = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (received + value.length > out.length) return new Blob([out.slice(0, received), value]).arrayBuffer();
+    out.set(value, received);
+    received += value.length;
+    const percent = Math.min(100, Math.round((received / total) * 100));
+    $('#progress-bar').style.width = `${percent}%`;
+    $('#progress-text').textContent = total > 2e6 ? `${percent}% · ${(received / 1e6).toFixed(0)} di ${(total / 1e6).toFixed(0)} MB` : `${percent}%`;
+  }
+  return out.buffer.slice(0, received);
 }
 
 async function openGift(input) {
@@ -95,6 +124,8 @@ async function openGift(input) {
     return;
   }
   showError('');
+  $('#progress-bar').style.width = '0%';
+  $('#progress-text').textContent = '';
   showScreen('loading');
   try {
     gift = await fetchGift(c);

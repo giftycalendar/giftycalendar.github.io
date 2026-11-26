@@ -45,6 +45,8 @@
     .ios { margin-top: 32px; font-size: 14px; }
     .spinner { width: 48px; height: 48px; margin: 80px auto 16px; border-radius: 50%;
       border: 5px solid rgba(255,255,255,.25); border-top-color: var(--accent); animation: spin 1s linear infinite; }
+    .progress { height: 8px; max-width: 320px; margin: 12px auto 4px; border-radius: 4px; background: rgba(255,255,255,.2); overflow: hidden; }
+    #progress-bar { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     #doors { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
@@ -110,6 +112,8 @@
   <section id="loading" class="screen" hidden>
     <div class="spinner" aria-hidden="true"></div>
     <p>Sto scartando il regalo…</p>
+    <div class="progress"><div id="progress-bar"></div></div>
+    <p id="progress-text" class="muted" style="font-size:14px"></p>
   </section>
 
   <section id="calendar" class="screen" hidden>
